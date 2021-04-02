@@ -6,11 +6,13 @@ import {
 } from '@chakra-ui/core';
 import Navbar from '../components/Navbar';
 
+import { RecoilRoot } from 'recoil';
 
 function MyApp({ Component, pageProps }) {
 	return (
-		<ThemeProvider>
-			<ColorModeProvider>
+		<RecoilRoot>
+			<ThemeProvider>
+				<ColorModeProvider>
 					<Flex direction='column' align='center' justify='center'>
 						<CSSReset />
 						<Navbar />
@@ -18,8 +20,10 @@ function MyApp({ Component, pageProps }) {
 							<Component {...pageProps} />
 						</Flex>
 					</Flex>
-			</ColorModeProvider>
-		</ThemeProvider>
+				</ColorModeProvider>
+			</ThemeProvider>
+		</RecoilRoot>
+
 	);
 }
 

@@ -1,6 +1,8 @@
 import { Box, Badge, Text, Flex } from '@chakra-ui/core';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
+import Tasks from '../pages/tasks';
+import { taskListState } from '../store/Tasks/taskState';
 
 const Container = styled.div`
   border: 1px solid lightgrey;
@@ -17,12 +19,17 @@ const Container = styled.div`
 `
 
 const TaskCard = props => {
+	const sendInfo = () => {
+
+		props.inforComponent(props);
+
+	}
 	
 	return (
 		<Draggable
 			draggableId={props._id}
 			index={props.index}
-		
+
 		>
 			{(provided, snapshot) => (
 				<Container
@@ -30,18 +37,20 @@ const TaskCard = props => {
 					{...provided.dragHandleProps}
 					ref={provided.innerRef}
 					isDragging={snapshot.isDragging}
-				
+					onClick={sendInfo}
 				>
 					<Box
 						my='4'
 						p={3}
+						pr={+props.pr}
 						bg='gray.500'
 						boxShadow='sm'
 						w='100%'
 						rounded='md'
-						color='white'>
+						color={props.task.style.fontColor}
+						>
 						<Flex justify='space-between' my='2'>
-							<Text fontSize='lg' fontWeight='semibold'>
+							<Text fontSize='lg' fontWeight={props.task.style.fontWeight}>
 								{props.title}
 							</Text>
 							<Badge
