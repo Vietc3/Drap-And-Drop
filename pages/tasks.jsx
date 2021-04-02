@@ -1,5 +1,5 @@
 import { Box, Grid, Stack, Text, Input, Select } from '@chakra-ui/core';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import TaskCard from '../components/TaskCard';
 import BoxTarget from '../components/BoxTarget';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -23,9 +23,26 @@ const Tasks = () => {
 	const columnsOder = useRecoilValue(columnOrder);
 	const [columns, setColumns] = useRecoilState(columnsState);
 
+	const task = useMemo(()=>columns['column-1'].taskIds.map(
+		taskId => {
+			return taskState[taskId]
+		}
+	)
+		.map((task, i) => (
+			<TaskCard
+				index={i}
+				key={task._id.toString()}
+				_id={task._id}
+				category={task.category}
+				title={task.title}
+				details={task.details}
+				task={task}
+			/>
+		))) 
+
 
 	const onDragEnd = result => {
-		const { source, destination, draggableId } = result;
+		const { source, destination, draggableId, reason } = result;
 		if (!destination) {
 			return
 		}
@@ -38,29 +55,24 @@ const Tasks = () => {
 		const start = columns[source.droppableId]
 		const finish = columns[destination.droppableId]
 
-		console.log('đang chạy');
 		if (start === finish) {
-
 			const newTaskIds = Array.from(start.taskIds)
-
 			newTaskIds.splice(source.index, 1)
 			newTaskIds.splice(destination.index, 0, draggableId)
-
 			const newColumn = {
 				...start,
 				taskIds: newTaskIds
 			}
-
 			const newState = {
 				...columns,
 				[newColumn.id]: newColumn
 			}
 
-			// console.log();
-
 			setColumns(newState)
-
 			return
+
+
+
 		}
 
 		// Moving from one list to another
@@ -133,7 +145,6 @@ const Tasks = () => {
  	 flex-grow: 1;
 	  min-height: 100px;
 	`
-
 	const fontSize = '1xl'
 
 
@@ -159,24 +170,9 @@ const Tasks = () => {
 										ref={provided.innerRef}
 										{...provided.droppableProps}
 										isDraggingOver={snapshot.isDraggingOver}
+
 									>
-										{ columns['column-1'].taskIds.map(
-											taskId => {
-												console.log(taskId);
-												return taskState[taskId]
-											}
-										)
-											.map((task, i) => (
-												<TaskCard
-													index={i}
-													key={task._id.toString()}
-													_id={task._id}
-													category={task.category}
-													title={task.title}
-													details={task.details}
-													task={task}
-												/>
-											))}
+{task}
 										{provided.placeholder}
 									</TaskList>
 								)}
@@ -247,8 +243,8 @@ const Tasks = () => {
 								<Text fontSize={fontSize} textAlign='left'>
 									Text Color
 						</Text>
-							
-						<Select onChange={onChangeColor} color='black'>
+
+								<Select onChange={onChangeColor} color='black'>
 									<option value={styleTask.style.fontColor}>{styleTask.style.fontColor}</option>
 									<option value="red.300">Red</option>
 									<option value="green.300">Green</option>
@@ -258,11 +254,11 @@ const Tasks = () => {
 								<Text fontSize={fontSize} textAlign='left'>
 									Edit Font Weight
 						</Text>
-						<Select onChange={onChangeFontWeight} color='black'>
+								<Select onChange={onChangeFontWeight} color='black'>
 									<option value={styleTask.style.fontWeight}>{styleTask.style.fontWeight}</option>
 									<option value="extrabold">Extra bold</option>
 									<option value="semibold">Semi bold</option>
-								
+
 								</Select>
 
 							</BoxTarget>
